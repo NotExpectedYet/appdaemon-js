@@ -1,7 +1,5 @@
 module.exports.app = appDaemon => {
   let { connection, util, config } = appDaemon;
-  console.log(connection)
-  console.log(util)
   const onEvent = evt => {
     console.log("triggered");
 
