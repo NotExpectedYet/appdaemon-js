@@ -57,3 +57,6 @@ This list is not exhaustive, it may change as I work through creating what I wan
 - [ ] Create some better example applications
 - [ ] Simple webserver for logs
 - [ ] Update documentation with example applications and setup
+- [ ] Github actions for builds / releasing
+- [ ] Docker version
+- [ ] Compile application down to binary
