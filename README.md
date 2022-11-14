@@ -8,11 +8,15 @@ _________
 
 Run the following on a machine with NodeJS and npm installed:
 
-`npm install -g app-daemon-js`
+`npm ci`
 
 then run
 
-`appdaemon-js`
+`npm run build`
+
+then
+
+`node lib/core/app.js`
 
 you should see some sample config and a sample app put 
 in your home directory under `.appdaemon-js/`
@@ -26,7 +30,7 @@ _________
 
 **Development:**
 
-Install the package dependencies
+Install the npm package dependencies
 
 `npm ci`
 

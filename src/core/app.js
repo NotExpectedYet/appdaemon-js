@@ -16,8 +16,6 @@ let CONFIG_FILE_PATH =
   process.env.APPDAEMONJS_CONFIG_FILE_PATH ||
   path.join(CONFIG_DIR, "config.js");
 
-console.log(CONFIG_FILE_PATH)
-
 const copyOptions = {
   overwrite: false,
   errorOnExist: false
@@ -75,19 +73,24 @@ const auth = haWs.createLongLivedTokenAuth(
 haWs
   .createConnection({auth})
   .then(conn => {
-    let appDaemon = {
-      util: haWs,
-      connection: conn,
-      config: config
-    };
     Object.entries(apps).forEach(([key, app]) => {
       let enabled = config.builtInApps[key] && config.builtInApps[key].enable;
+      let appDaemon = {
+        util: haWs,
+        connection: conn,
+        config: config.builtInApps[key]
+      };
       if (enabled) app.app(appDaemon);
     });
 
     customApps.forEach(app => {
       let enabled =
         config.customApps[app.name] && config.customApps[app.name].enable;
+      let appDaemon = {
+        util: haWs,
+        connection: conn,
+        config: config.customApps[app.name]
+      };
       if (enabled) app.app(appDaemon);
       console.log(app.name + " enabled: " + enabled);
     });

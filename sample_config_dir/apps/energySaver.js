@@ -2,12 +2,12 @@ module.exports.app = appDaemon => {
   let { connection, util, config } = appDaemon;
 
   const onEvent = evt => {
-    console.log("triggered");
+    console.log("triggered 2");
 
     if (
       evt.event_type === "state_changed" &&
       evt.data.new_state.state === "on" &&
-      config.customApps.energySaver.entities.indexOf(evt.data.entity_id) > -1
+      config.entities.indexOf(evt.data.entity_id) > -1
     ) {
       console.log("condition matched");
 
@@ -17,7 +17,7 @@ module.exports.app = appDaemon => {
         connection.callService("homeassistant", "turn_off", {
           entity_id: evt.data.entity_id
         });
-      }, config.customApps.energySaver.minutes * 60 * 1000);
+      }, config.minutes * 60 * 1000);
     }
   };
 
