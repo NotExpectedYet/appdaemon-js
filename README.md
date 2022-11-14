@@ -2,16 +2,6 @@ AppDaemon JS
 ------
 
 ### Javascript apps for Home Assistant
-
------
-
-**AppDaemon JS is nearing the first alpha release!** 
-
-Please create a pull request 
-or ping me (@adgelbfish) 
-on Gitter with any issues 
-so I can fix them right away
-
 _________
 
 **Try it out:**
@@ -32,4 +22,17 @@ you can also specify a different directory via
 
 `appdaemon-js ~/.path/to/config/directory/`
 
+_________
+
+**Development:**
+
+Install the package dependencies
+
+`npm ci`
+
+then run
+
+`npm run dev`
+
+a default config file will be generated on first run. Fill in your HA details and run the app again.
 
