@@ -1,8 +1,9 @@
 module.exports.app = appDaemon => {
   let { connection, util, config } = appDaemon;
-
+  console.log(connection)
+  console.log(util)
   const onEvent = evt => {
-    console.log("triggered 2");
+    console.log("triggered");
 
     if (
       evt.event_type === "state_changed" &&
@@ -14,7 +15,7 @@ module.exports.app = appDaemon => {
       setTimeout(() => {
         console.log("service call firing");
 
-        connection.callService("homeassistant", "turn_off", {
+        util.callService("homeassistant", "turn_off", {
           entity_id: evt.data.entity_id
         });
       }, config.minutes * 60 * 1000);

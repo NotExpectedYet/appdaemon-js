@@ -57,8 +57,6 @@ try {
   console.error(err);
 }
 
-import * as apps from "../apps/index";
-
 export const getWsUrl = (haUrl, port, encrypted) =>
   `http${encrypted ? "s" : ""}://${haUrl}${port ? ":" + port : ""}`;
 
@@ -73,23 +71,13 @@ const auth = haWs.createLongLivedTokenAuth(
 haWs
   .createConnection({auth})
   .then(conn => {
-    Object.entries(apps).forEach(([key, app]) => {
-      let enabled = config.builtInApps[key] && config.builtInApps[key].enable;
-      let appDaemon = {
-        util: haWs,
-        connection: conn,
-        config: config.builtInApps[key]
-      };
-      if (enabled) app.app(appDaemon);
-    });
-
     customApps.forEach(app => {
       let enabled =
-        config.customApps[app.name] && config.customApps[app.name].enable;
+        config.apps[app.name] && config.apps[app.name].enable;
       let appDaemon = {
-        util: haWs,
+        util: haWs, //TODO pass through bundled safe utilities rather than entire websocket library
         connection: conn,
-        config: config.customApps[app.name]
+        config: config.apps[app.name]
       };
       if (enabled) app.app(appDaemon);
       console.log(app.name + " enabled: " + enabled);
