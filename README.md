@@ -45,18 +45,3 @@ then run
 `npm run dev`
 
 a default config file will be generated on first run. Fill in your HA details and run the app again.
-
-_________
-This list is not exhaustive, it may change as I work through creating what I want out of this. 
-
-**Path to v1.0:**
-- [ ] Better configuration validation / updating
-- [ ] Create proper utility class to handle home assistant data communication
-- [ ] Create helper utilities to further extend custom app functionality
-- [ ] Create listener classes for events
-- [ ] Create some better example applications
-- [ ] Simple webserver for logs
-- [ ] Update documentation with example applications and setup
-- [ ] Github actions for builds / releasing
-- [ ] Docker version
-- [ ] Compile application down to binary
