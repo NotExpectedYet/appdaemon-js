@@ -16,6 +16,8 @@ let CONFIG_FILE_PATH =
   process.env.APPDAEMONJS_CONFIG_FILE_PATH ||
   path.join(CONFIG_DIR, "config.js");
 
+console.log(CONFIG_FILE_PATH)
+
 const copyOptions = {
   overwrite: false,
   errorOnExist: false
@@ -60,26 +62,24 @@ try {
 import * as apps from "../apps/index";
 
 export const getWsUrl = (haUrl, port, encrypted) =>
-  `ws${encrypted ? "s" : ""}://${haUrl}${port ? ":" + port : ""}/api/websocket`;
+  `http${encrypted ? "s" : ""}://${haUrl}${port ? ":" + port : ""}`;
 
-haWs
-  .createConnection(
+const auth = haWs.createLongLivedTokenAuth(
     getWsUrl(
-      config.appDaemon.haUrl,
-      config.appDaemon.port,
-      config.appDaemon.encryption || false
-    ),
-    {
-      authToken: config.appDaemon.haKey
-    }
-  )
+    config.appDaemon.haUrl,
+    config.appDaemon.port,
+    config.appDaemon.encryption || false
+),
+    config.appDaemon.haKey
+);
+haWs
+  .createConnection({auth})
   .then(conn => {
     let appDaemon = {
       util: haWs,
       connection: conn,
       config: config
     };
-
     Object.entries(apps).forEach(([key, app]) => {
       let enabled = config.builtInApps[key] && config.builtInApps[key].enable;
       if (enabled) app.app(appDaemon);
