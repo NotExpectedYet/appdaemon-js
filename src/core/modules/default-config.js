@@ -50,8 +50,8 @@ class DefaultConfig {
 
     copyDefaultApplicationsAndConfig(){
         fse.copySync( join(__dirname, "../../../sample_config_dir/apps/energySaver.js"), join(this.#CUSTOM_APP_DIR, "energySaver.js"), this.#COPY_OPTIONS );
-        fse.copySync( join(__dirname, "../../../sample_config_dir/apps/energySaver.js"), join(this.#CUSTOM_APP_DIR, "helloWorld.js"), this.#COPY_OPTIONS );
-        fse.copySync( join(__dirname, "../../../sample_config_dir/apps/energySaver.js"), join(this.#CUSTOM_APP_DIR, "printEntities.js"), this.#COPY_OPTIONS );
+        fse.copySync( join(__dirname, "../../../sample_config_dir/apps/helloWorld.js"), join(this.#CUSTOM_APP_DIR, "helloWorld.js"), this.#COPY_OPTIONS );
+        fse.copySync( join(__dirname, "../../../sample_config_dir/apps/printEntities.js"), join(this.#CUSTOM_APP_DIR, "printEntities.js"), this.#COPY_OPTIONS );
         fse.copySync( resolve(__dirname, "../../../sample_config_dir/config.js"), this.#CONFIG_FILE_PATH, this.#COPY_OPTIONS );
     }
 }
