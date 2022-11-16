@@ -58,24 +58,9 @@ export default class HassConnectionManager {
         }
     }
 
-    subscribeToEntityEvents(entities, event_type, state, callback){
-        console.log(entities, event_type, state, callback)
-        const onEvent = evt => {
-            if (
-                evt.event_type === event_type &&
-                // evt.data.new_state.state === state &&
-                entities.indexOf(evt.data.entity_id) > -1
-            ) {
-                console.log(evt)
-                callback(evt)
-            }
-        }
-        this.#CONNECTION.subscribeEvents(onEvent)
-    }
-
     createListenersObject() {
         this.#LISTENERS = {
-            subscribeToEntity: (evt) => this.#CONNECTION.subscribeEvents(evt)
+            subscribeToEvent: (evt) => this.#CONNECTION.subscribeEvents(evt)
         }
     }
 }
