@@ -1,0 +1,14 @@
+// Comments are allowed as opposed to regular JSON files
+{
+  presets: [
+    // Use the preset-env babel plugins
+    '@babel/preset-env'
+  ],
+  plugins: [
+    // Besides the presets, use this plugin
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-syntax-import-meta",
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-json-strings"
+  ]
+}
