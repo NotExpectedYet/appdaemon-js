@@ -1,4 +1,5 @@
 import * as haWs from "home-assistant-js-websocket";
+import {getServices} from "home-assistant-js-websocket";
 
 export default class HassConnectionManager {
     #HASS_URL;
@@ -54,13 +55,20 @@ export default class HassConnectionManager {
 
     createUtilitiesObject() {
         this.#UTILITIES = {
-            callService: haWs.callService,
+            callService: async (domain, service, serviceData = undefined, target = undefined) => await haWs.callService(this.#CONNECTION, domain, service, serviceData, target),
+            getUser: async () => await haWs.getUser(this.#CONNECTION),
+            getStates: async () => await haWs.getStates(this.#CONNECTION),
+            getServices: async () => await haWs.getServices(this.#CONNECTION),
+            getConfig: async () => await haWs.getConfig(this.#CONNECTION)
         }
     }
 
     createListenersObject() {
         this.#LISTENERS = {
-            subscribeToEvent: (evt) => this.#CONNECTION.subscribeEvents(evt)
+            subscribeToEvent: (func) => this.#CONNECTION.subscribeEvents(func),
+            subscribeToEntities: (func) => haWs.subscribeEntities(this.#CONNECTION, (entities) => func),
+            subscribeToConfig: (func) => haWs.subscribeConfig(this.#CONNECTION, (config) => func),
+            subscribeToServices: (func) => haWs.subscribeServices(this.#CONNECTION, (services) => func)
         }
     }
 }
