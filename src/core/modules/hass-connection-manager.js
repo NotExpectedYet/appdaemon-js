@@ -1,5 +1,6 @@
 import * as haWs from "home-assistant-js-websocket";
-import {getServices} from "home-assistant-js-websocket";
+import { getDomainFromEntityID } from "../util/string";
+import { createServiceDataObject } from "../util/objects"
 
 export default class HassConnectionManager {
     #HASS_URL;
@@ -7,6 +8,7 @@ export default class HassConnectionManager {
     #CONNECTION;
     #UTILITIES;
     #LISTENERS;
+    #COMMANDS;
 
     constructor(config) {
         if (!config?.haUrl || !config?.port || !config?.haKey) {
@@ -42,9 +44,11 @@ export default class HassConnectionManager {
             this.#CONNECTION = await haWs.createConnection({auth: this.#AUTH})
             this.createUtilitiesObject();
             this.createListenersObject();
+            this.createCommandsObject();
             return {
                 conn: this.#CONNECTION,
                 utils: this.#UTILITIES,
+                commands: this.#COMMANDS,
                 listeners: this.#LISTENERS
             };
         }catch (e){
@@ -56,10 +60,21 @@ export default class HassConnectionManager {
     createUtilitiesObject() {
         this.#UTILITIES = {
             callService: async (domain, service, serviceData = undefined, target = undefined) => await haWs.callService(this.#CONNECTION, domain, service, serviceData, target),
-            getUser: async () => await haWs.getUser(this.#CONNECTION),
             getStates: async () => await haWs.getStates(this.#CONNECTION),
-            getServices: async () => await haWs.getServices(this.#CONNECTION),
-            getConfig: async () => await haWs.getConfig(this.#CONNECTION)
+        }
+    }
+
+    createCommandsObject() {
+        this.#COMMANDS = {
+            turnOn: async (entity_id, serviceData) => {
+                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_on", createServiceDataObject(entity_id, serviceData))
+            },
+            turnOff: async (entity_id, serviceData) => {
+                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_off", createServiceDataObject(entity_id, serviceData))
+            },
+            toggle: async (entity_id, serviceData) => {
+                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "toggle", createServiceDataObject(entity_id, serviceData))
+            },
         }
     }
 
@@ -67,8 +82,6 @@ export default class HassConnectionManager {
         this.#LISTENERS = {
             subscribeToEvent: (func) => this.#CONNECTION.subscribeEvents(func),
             subscribeToEntities: (func) => haWs.subscribeEntities(this.#CONNECTION, (entities) => func),
-            subscribeToConfig: (func) => haWs.subscribeConfig(this.#CONNECTION, (config) => func),
-            subscribeToServices: (func) => haWs.subscribeServices(this.#CONNECTION, (services) => func)
         }
     }
 }

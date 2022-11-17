@@ -32,12 +32,13 @@ class ApplicationManager {
         }
     }
 
-    loadEnabledApplications(connection, utils, listeners, appConfig){
+    loadEnabledApplications(connection, utils, listeners, commands, appConfig){
         this.#APPS.filter(app => appConfig[app.name] && appConfig[app.name].enable).forEach(app => {
             console.log(app.name + " enabled");
             let appDaemon = {
                 utils, //TODO build a proper utility package
                 listeners, // TODO build a proper listener package for easy subscriptions
+                commands,
                 config: {
                     entities: appConfig[app.name]?.entities || [],
                     settings: appConfig[app.name]?.settings || []
