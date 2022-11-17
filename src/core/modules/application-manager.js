@@ -44,7 +44,12 @@ class ApplicationManager {
                     settings: appConfig[app.name]?.settings || []
                 }
             };
-            app.app(appDaemon)
+            try{
+                app.app(appDaemon)
+            }catch(e){
+                console.error(`Error! ${app.name} has an issue! \n ${e.toString()}`)
+            }
+
         });
     }
 }

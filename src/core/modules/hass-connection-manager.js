@@ -48,8 +48,8 @@ export default class HassConnectionManager {
             return {
                 conn: this.#CONNECTION,
                 utils: this.#UTILITIES,
-                commands: this.#COMMANDS,
-                listeners: this.#LISTENERS
+                listeners: this.#LISTENERS,
+                commands: this.#COMMANDS
             };
         }catch (e){
             console.error(e)
@@ -59,8 +59,18 @@ export default class HassConnectionManager {
 
     createUtilitiesObject() {
         this.#UTILITIES = {
-            callService: async (domain, service, serviceData = undefined, target = undefined) => await haWs.callService(this.#CONNECTION, domain, service, serviceData, target),
-            getStates: async () => await haWs.getStates(this.#CONNECTION),
+            //callService: async (domain, service, serviceData = undefined, target = undefined) => await haWs.callService(this.#CONNECTION, domain, service, serviceData, target),
+            getEntityState: async (filter) => {
+                const states = await haWs.getStates(this.#CONNECTION)
+                return states.filter((v) => v.entity_id === filter)[0]
+            },
+            getEntitiesState: async (filter) => {
+                const states = await haWs.getStates(this.#CONNECTION)
+                return states.filter((v) => v.entity_id.includes(filter))
+            },
+            //getServices: async (filter) => await haWs.getServices(this.#CONNECTION),
+            //getConfig: async (filtere) => await haWs.getConfig(this.#CONNECTION)
+            callService: async (domain, service, serviceData = undefined, target = undefined) => haWs.callService(this.#CONNECTION, domain, service, serviceData, target),
         }
     }
 
@@ -75,11 +85,25 @@ export default class HassConnectionManager {
             toggle: async (entity_id, serviceData) => {
                 return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "toggle", createServiceDataObject(entity_id, serviceData))
             },
+            startTimer: async (entity_id, serviceData) => {
+                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "start", createServiceDataObject(entity_id, serviceData))
+            },
+            pauseTimer: async (entity_id, serviceData) => {
+                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "pause", createServiceDataObject(entity_id, serviceData))
+            }
         }
     }
 
     createListenersObject() {
         this.#LISTENERS = {
+            /**
+             * Subsribe to entities
+             * @param func callback function you'd like the event data to be passed through too
+             * @param entities array of entities
+             * @param old_state string with state to match
+             * @param new_state string with state to match
+             * @returns {Promise<SubscriptionUnsubscribe>}
+             */
             subscribeEntitiesStateChange: (func, entities = undefined, old_state = undefined, new_state = undefined) => this.#CONNECTION.subscribeEvents((evt) => {
                 if(evt.event_type !== "state_changed") return
 
