@@ -80,7 +80,7 @@ export default class HassConnectionManager {
 
     createListenersObject() {
         this.#LISTENERS = {
-            subscribeEntitieStateChange: (func, entities = undefined, old_state = undefined, new_state = undefined) => this.#CONNECTION.subscribeEvents((evt) => {
+            subscribeEntitiesStateChange: (func, entities = undefined, old_state = undefined, new_state = undefined) => this.#CONNECTION.subscribeEvents((evt) => {
                 if(evt.event_type !== "state_changed") return
 
                 if(!entities) return func(evt.data)
@@ -104,8 +104,7 @@ export default class HassConnectionManager {
                 if(evt.event_type === "state_changed" && entitiesCondition && newStateCondition && oldStateCondition){
                     func(evt.data)
                 }
-            }),
-            subscribeToEntities: (func) => haWs.subscribeEntities(this.#CONNECTION, (entities) => func),
+            })
         }
     }
 }
