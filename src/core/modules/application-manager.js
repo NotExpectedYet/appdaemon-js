@@ -36,8 +36,8 @@ class ApplicationManager {
         this.#APPS.filter(app => appConfig[app.name] && appConfig[app.name].enable).forEach(app => {
             console.log(app.name + " enabled");
             let appDaemon = {
-                utils, //TODO build a proper utility package
-                listeners, // TODO build a proper listener package for easy subscriptions
+                utils,
+                listeners,
                 commands,
                 config: {
                     entities: appConfig[app.name]?.entities || [],

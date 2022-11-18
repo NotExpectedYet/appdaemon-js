@@ -4,9 +4,10 @@ AppDaemon JS
 ### Javascript apps for Home Assistant
 App Daemon JS is an attempt to allow me to extend my home assistant installation with JavaScript rather than Python. 
 
-Currently considered unstable... use at your own risk.
+This is a WIP for myself currently. If anyone else wants to use it feel free, I'll put up a repository with how I'm using it soon. 
 
-Path to V1.0 is below...
+It's not to be considered robust at all though. If anyone would like to help take this further then feel free, could be an interesting little project.
+
 
 _________
 
