@@ -1,6 +1,6 @@
 import * as haWs from "home-assistant-js-websocket";
 import { getDomainFromEntityID } from "../util/string";
-import { createServiceDataObject } from "../util/objects"
+import {createEntityTargetObject, createServiceDataObject, createTargetObject} from "../util/objects"
 
 export default class HassConnectionManager {
     #HASS_URL;
@@ -76,20 +76,28 @@ export default class HassConnectionManager {
 
     createCommandsObject() {
         this.#COMMANDS = {
-            turnOn: async (entity_id, serviceData) => {
-                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_on", createServiceDataObject(entity_id, serviceData))
+            turnOn: async (entity_id, serviceData = {}) => {
+                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_on", {}, createEntityTargetObject(entity_id))
             },
-            turnOff: async (entity_id, serviceData) => {
-                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_off", createServiceDataObject(entity_id, serviceData))
+            turnOff: async (entity_id, serviceData = {}) => {
+                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_off", {}, createEntityTargetObject(entity_id))
             },
-            toggle: async (entity_id, serviceData) => {
-                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "toggle", createServiceDataObject(entity_id, serviceData))
+            toggle: async (entity_id, serviceData = {}) => {
+                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "toggle", {}, createEntityTargetObject(entity_id))
             },
-            startTimer: async (entity_id, serviceData) => {
-                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "start", createServiceDataObject(entity_id, serviceData))
+            startTimer: async (entity_id, serviceData = {}) => {
+                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "start", {}, createEntityTargetObject(entity_id))
             },
-            pauseTimer: async (entity_id, serviceData) => {
-                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "pause", createServiceDataObject(entity_id, serviceData))
+            pauseTimer: async (entity_id, serviceData = {}) => {
+                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "pause", {}, createEntityTargetObject(entity_id))
+            },
+            fireScript: async (entity_id, serviceData = {}) => {
+                try {
+                    return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_on", createServiceDataObject(serviceData), createEntityTargetObject(entity_id))
+                } catch (e) {
+                    console.error(e.toString())
+                }
+
             }
         }
     }

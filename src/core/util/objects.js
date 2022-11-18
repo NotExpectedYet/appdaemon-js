@@ -1,6 +1,10 @@
-export const createServiceDataObject = (entity_id, additionalData) => {
+export const createEntityTargetObject = (entity_id) => {
     return {
         entity_id,
-        ...additionalData
+    }
+}
+export const createServiceDataObject = (additionalData) => {
+    return {
+        variables: additionalData
     }
 }
