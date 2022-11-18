@@ -1,6 +1,6 @@
 //This file is currently not being used
 
-import fs from "fs";
+import fs from "src/util/fs";
 
 const readFilePromise = (filePathWithName, encoding = "utf8") =>
   new Promise((resolve, reject) => {

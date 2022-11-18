@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import WebSocket from "ws";
 global.WebSocket = WebSocket;
-import appDaemonConfig from "./modules/default-config";
-import applicationsManager from "./modules/application-manager";
-import HassConnectionManager from "./modules/hass-connection-manager";
+import appDaemonConfig from "../modules/default-config";
+import applicationsManager from "../modules/application-manager";
+import HassConnectionManager from "../modules/hass-connection-manager";
 
 console.log("Loaded Configuration: ", appDaemonConfig.configDirectory)
 
