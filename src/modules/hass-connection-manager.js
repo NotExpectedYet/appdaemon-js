@@ -1,6 +1,7 @@
 import * as haWs from "home-assistant-js-websocket";
 import { getDomainFromEntityID } from "../util/string";
-import {createEntityTargetObject, createServiceDataObject, createTargetObject} from "../util/objects"
+import { createEntityTargetObject, createServiceDataObject } from "../util/objects"
+import { everyItem, someItems } from "../util/array";
 
 export default class HassConnectionManager {
     #HASS_URL;
@@ -59,6 +60,7 @@ export default class HassConnectionManager {
 
     createUtilitiesObject() {
         this.#UTILITIES = {
+            //TODO move these out to utility classes
             //callService: async (domain, service, serviceData = undefined, target = undefined) => await haWs.callService(this.#CONNECTION, domain, service, serviceData, target),
             getEntityState: async (filter) => {
                 const states = await haWs.getStates(this.#CONNECTION)
@@ -71,6 +73,17 @@ export default class HassConnectionManager {
             //getServices: async (filter) => await haWs.getServices(this.#CONNECTION),
             //getConfig: async (filtere) => await haWs.getConfig(this.#CONNECTION)
             callService: async (domain, service, serviceData = undefined, target = undefined) => haWs.callService(this.#CONNECTION, domain, service, serviceData, target),
+            // BELOW ARE THE UTILITY CLASSES
+            everyEntity: async (entities, key, match) => {
+                if(entities.length < 1) return false;
+                const currentStates = await this.#UTILITIES.getEntitiesState(entities);
+                return everyItem(currentStates, key, match)
+            },
+            someEntities: async (entities, key, match) => {
+                if(entities.length < 1) return false;
+                const currentStates = await this.#UTILITIES.getEntitiesState(entities);
+                return someItems(currentStates, key, match)
+            }
         }
     }
 
@@ -106,8 +119,8 @@ export default class HassConnectionManager {
         this.#LISTENERS = {
             /**
              * Subsribe to entities
-             * @param func callback function you'd like the event data to be passed through too
-             * @param entities array of entities
+             * @callback {func} callback function you'd like the event data to be passed through too
+             * @param {array} entities array of entities
              * @param old_state string with state to match
              * @param new_state string with state to match
              * @returns {Promise<SubscriptionUnsubscribe>}
@@ -136,7 +149,27 @@ export default class HassConnectionManager {
                 if(evt.event_type === "state_changed" && entitiesCondition && newStateCondition && oldStateCondition){
                     func(evt.data)
                 }
-            })
+            }),
+            subscribeToTimerEvents: (func, entities = undefined, type = undefined) => this.#CONNECTION.subscribeEvents((evt) => {
+                if(!evt.event_type.includes("timer")) return
+
+                if(!entities) return func(evt)
+
+                let entitiesCondition = true;
+                let typeCondition = true;
+
+                if(entities){
+                    entitiesCondition = entities.indexOf(evt.data.entity_id) > -1
+                }
+
+                if(type){
+                    typeCondition = evt.event_type === type
+                }
+
+                if(entitiesCondition && typeCondition){
+                    func(evt)
+                }
+            }),
         }
     }
 }

@@ -4,6 +4,7 @@ global.WebSocket = WebSocket;
 import appDaemonConfig from "../modules/default-config";
 import applicationsManager from "../modules/application-manager";
 import HassConnectionManager from "../modules/hass-connection-manager";
+// TODO import logging for use inside app
 
 console.log("Loaded Configuration: ", appDaemonConfig.configDirectory)
 
