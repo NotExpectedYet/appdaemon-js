@@ -20,7 +20,7 @@ const COLOURS = {
 
 const COLOUR_MAP = {
     info: COLOURS.BLUE,
-    warn: COLOURS.ORANGE,
+    warn: COLOURS.YELLOW,
     debug: COLOURS.ORANGE,
     error: COLOURS.RED,
     http: COLOURS.PURPLE,

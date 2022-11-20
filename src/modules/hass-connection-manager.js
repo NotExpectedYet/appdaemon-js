@@ -8,6 +8,9 @@ import { delay_seconds } from "../../lib/util/promise";
 import LoggerService from "../modules/logger"
 import {dateInTheFuture} from "../util/dates";
 
+const LOGGER = new LoggerService("appdaemon.js - Hass Connection Manager")
+
+
 export default class HassConnectionManager {
     #HASS_URL;
     #AUTH;
@@ -20,8 +23,7 @@ export default class HassConnectionManager {
 
     constructor(config) {
         if (!config?.haUrl || !config?.port || !config?.haKey) {
-            this.#LOGGER = new LoggerService("appdaemon.js - Hass Connection Manager")
-            this.#LOGGER.info("HaURL: " + config.haUrl, "Port: " + config.port, "HaKey: " + config.haKey)
+            LOGGER.error("HaURL: " + config.haUrl, "Port: " + config.port, "HaKey: " + config.haKey)
             throw new Error("Missing configuration keys!")
         }
         this.#APPLICATION_LOGGER = (route) => {
@@ -66,7 +68,7 @@ export default class HassConnectionManager {
                 logger: this.#APPLICATION_LOGGER
             };
         }catch (e){
-            this.#LOGGER.error("Error creating hass connection! exiting...", e.toString())
+            LOGGER.error("Error creating hass connection! exiting...", e.toString())
             process.exit();
         }
     }
@@ -80,7 +82,7 @@ export default class HassConnectionManager {
                 try {
                     return haWs.callService(this.#CONNECTION, domain, service, serviceData, target)
                 } catch (e) {
-                    this.#LOGGER.error(`Failed to call service ${e.toString()}`, {domain, service, serviceData, target})
+                    LOGGER.error(`Failed to call service ${e.toString()}`, {domain, service, serviceData, target})
                 }
 
 
@@ -91,7 +93,7 @@ export default class HassConnectionManager {
                     const states = await haWs.getStates(this.#CONNECTION)
                     return states.filter((v) => v.entity_id === filter)[0]
                 } catch (e) {
-                    this.#LOGGER.error(`Failed to get entity state ${e.toString()}`, filter)
+                    LOGGER.error(`Failed to get entity state ${e.toString()}`, filter)
                 }
 
             },
@@ -100,7 +102,7 @@ export default class HassConnectionManager {
                     const states = await haWs.getStates(this.#CONNECTION)
                     return states.filter((v) => v.entity_id.includes(filter))
                 } catch (e) {
-                    this.#LOGGER.error(`Failed to get entities states ${e.toString()}`, filter)
+                    LOGGER.error(`Failed to get entities states ${e.toString()}`, filter)
                 }
             },
             everyEntity: async (entities, key, match) => {
@@ -109,7 +111,7 @@ export default class HassConnectionManager {
                     const currentStates = await this.#UTILITIES.getEntitiesState(entities);
                     return everyItem(currentStates, key, match)
                 } catch (e) {
-                    this.#LOGGER.error(`Failed to check every entity ${e.toString()}`, { entities, key, match })
+                    LOGGER.error(`Failed to check every entity ${e.toString()}`, { entities, key, match })
                 }
             },
             someEntities: async (entities, key, match) => {
@@ -118,7 +120,7 @@ export default class HassConnectionManager {
                     const currentStates = await this.#UTILITIES.getEntitiesState(entities);
                     return someItems(currentStates, key, match)
                 } catch (e) {
-                    this.#LOGGER.error(`Failed to check some entities states ${e.toString()}`, {entities, key, match})
+                    LOGGER.error(`Failed to check some entities states ${e.toString()}`, {entities, key, match})
                 }
 
 
@@ -127,7 +129,7 @@ export default class HassConnectionManager {
                 try {
                     return delay_seconds(seconds)
                 } catch (e) {
-                    this.#LOGGER.error(`Failed to delay ${e.toString()}`, seconds)
+                    LOGGER.error(`Failed to delay ${e.toString()}`, seconds)
                 }
 
 
@@ -136,7 +138,7 @@ export default class HassConnectionManager {
                 try {
                     return getEntityFromEntityID(entity)
                 } catch (e) {
-                    this.#LOGGER.error(`Failed to get entity from id ${e.toString()}`, entity)
+                    LOGGER.error(`Failed to get entity from id ${e.toString()}`, entity)
                 }
 
 
@@ -145,7 +147,7 @@ export default class HassConnectionManager {
                 try {
                     return breakOutNewOldStates(evt)
                 } catch (e) {
-                    this.#LOGGER.error(`Failed to split out new/old states ${e.toString()}`, evt)
+                    LOGGER.error(`Failed to split out new/old states ${e.toString()}`, evt)
                 }
 
             },
@@ -160,7 +162,7 @@ export default class HassConnectionManager {
                 try {
                     return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_on", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
-                    this.#LOGGER.error(`Failed to turn on a ${getDomainFromEntityID(entity_id)}`,e.toString())
+                    LOGGER.error(`Failed to turn on a ${getDomainFromEntityID(entity_id)}`,e.toString())
                 }
             },
             turnOff: async (entity_id, serviceData = {}) => {
@@ -168,21 +170,21 @@ export default class HassConnectionManager {
                 try {
                     return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_off", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
-                    this.#LOGGER.error(`Failed to turn off a ${getDomainFromEntityID(entity_id)}`, e.toString())
+                    LOGGER.error(`Failed to turn off a ${getDomainFromEntityID(entity_id)}`, e.toString())
                 }
             },
             toggle: async (entity_id, serviceData = {}) => {
                 try {
                     return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "toggle", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
-                    this.#LOGGER.error(`Failed to toggle a ${getDomainFromEntityID(entity_id)}`, e.toString())
+                    LOGGER.error(`Failed to toggle a ${getDomainFromEntityID(entity_id)}`, e.toString())
                 }
             },
             startTimer: async (entity_id, serviceData = {}) => {
                 try {
                     return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "start", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
-                    this.#LOGGER.error("Failed to start a timer", e.toString())
+                    LOGGER.error("Failed to start a timer", e.toString())
                 }
             },
             pauseTimer: async (entity_id, serviceData = {}) => {
@@ -190,7 +192,7 @@ export default class HassConnectionManager {
                 try {
                     return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "pause", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
-                    this.#LOGGER.error("Failed to pause a timer", e.toString())
+                    LOGGER.error("Failed to pause a timer", e.toString())
                 }
             },
             finishTimer: async (entity_id, serviceData = {}) => {
@@ -198,14 +200,14 @@ export default class HassConnectionManager {
                 try {
                     return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "finish", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
-                    this.#LOGGER.error("Failed to finish a timer", e.toString())
+                    LOGGER.error("Failed to finish a timer", e.toString())
                 }
             },
             fireScript: async (entity_id, serviceData = {}) => {
                 try {
                     return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_on", createServiceDataObject(serviceData), createEntityTargetObject(entity_id))
                 } catch (e) {
-                    this.#LOGGER.error("Failed to fire a script", e.toString())
+                    LOGGER.error("Failed to fire a script", e.toString())
                 }
 
             }
@@ -251,7 +253,7 @@ export default class HassConnectionManager {
                     try{
                         func(evt.data)
                     }catch(e){
-                        this.#LOGGER.error(`Failed to callback subscribe entity ${e.toString()}`)
+                        LOGGER.error(`Failed to callback subscribe entity ${e.toString()}`)
                     }
 
                 }
@@ -262,7 +264,7 @@ export default class HassConnectionManager {
                 try {
                     if(!entities) return func(evt)
                 } catch (e) {
-                    this.#LOGGER.error(`Failed to callback timer events, ${e.toString()}`)
+                    LOGGER.error(`Failed to callback timer events, ${e.toString()}`)
                 }
 
                 let entitiesCondition = true;
@@ -280,7 +282,7 @@ export default class HassConnectionManager {
                     try {
                         func(evt)
                     } catch (e) {
-                        this.#LOGGER.error(`Failed to callback timer events, ${e.toString()}`)
+                        LOGGER.error(`Failed to callback timer events, ${e.toString()}`)
                     }
                 }
             }),
