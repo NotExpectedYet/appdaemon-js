@@ -1,13 +1,16 @@
 import { join } from "path";
 import fse from "fs-extra";
 import appDaemonConfig from "./default-config";
+import LoggerService from "../modules/logger"
 
 let applicationsManager;
 
 class ApplicationManager {
-    #APPS
+    #APPS;
+    #LOGGER;
 
     constructor() {
+        this.#LOGGER = new LoggerService("appDaemon.js - Application Manager")
         this.parseApplicationsDirectory();
     }
 
@@ -29,13 +32,13 @@ class ApplicationManager {
                 };
             });
         } catch (err) {
-            console.error(err);
+            this.#LOGGER.error("Unable to parse app directory!", err.toString())
         }
     }
 
     loadEnabledApplications(connection, utils, listeners, logger, commands, appConfig){
         this.#APPS.filter(app => appConfig[app.name] && appConfig[app.name].enable).forEach(app => {
-            console.log(app.name + " enabled");
+            this.#LOGGER.info("Application has been enabled! " + app.name)
             let appDaemon = {
                 utils,
                 listeners,
@@ -49,7 +52,7 @@ class ApplicationManager {
             try{
                 app.app(appDaemon)
             }catch(e){
-                console.error(`Error! ${app.name} has an issue! \n ${e.toString()}`)
+                this.#LOGGER.error(`Error! ${app.name} has an issue! \n ${e.toString()}`)
             }
 
         });

@@ -1,4 +1,6 @@
 import winston from "winston"
+import appDaemonConfig from "./default-config";
+import { join } from "path";
 
 const dtFormat = new Intl.DateTimeFormat("en-GB", {
     timeStyle: "medium",
@@ -7,13 +9,13 @@ const dtFormat = new Intl.DateTimeFormat("en-GB", {
 });
 
 const COLOURS = {
-    RED: "",
-    YELLOW: "",
-    ORANGE: "",
-    BLUE: "",
-    PURPLE: "",
-    WHITE: "",
-    CYAN: ""
+    RED: "\x1b[31m",
+    YELLOW: "\x1b[33m",
+    ORANGE: "\x1b[31m",
+    BLUE: "\x1b[34m",
+    PURPLE: "\x1b[35m",
+    WHITE: "\x1b[37m",
+    CYAN: "\x1b[36m"
 };
 
 const COLOUR_MAP = {
@@ -95,7 +97,7 @@ export default class LoggerService {
                         new winston.transports.File({
                             level: logFilterLevel,
                             format: prettyPrintMyLogs,
-                            filename: `../dev/logs/${route}.log`,
+                            filename: join(appDaemonConfig.configDirectory, `logs/${route}.log`),
                             maxsize: 5242880,
                             maxFiles: 3
                         })
