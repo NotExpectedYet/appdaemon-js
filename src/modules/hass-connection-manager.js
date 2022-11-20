@@ -2,6 +2,10 @@ import * as haWs from "home-assistant-js-websocket";
 import { getDomainFromEntityID } from "../util/string";
 import { createEntityTargetObject, createServiceDataObject } from "../util/objects"
 import { everyItem, someItems } from "../util/array";
+import { breakOutNewOldStates } from "../../src/util/objects";//TODO: Woops should be a utility
+import { getEntityFromEntityID } from "../../src/util/string";//TODO: Woops should be a utility
+import { delay_seconds } from "../../lib/util/promise"; //TODO: Woops should be a utility
+import LoggerService from "../modules/logger"
 
 export default class HassConnectionManager {
     #HASS_URL;
@@ -10,12 +14,19 @@ export default class HassConnectionManager {
     #UTILITIES;
     #LISTENERS;
     #COMMANDS;
+    #LOGGER;
+    #APPLICATION_LOGGER;
 
     constructor(config) {
         if (!config?.haUrl || !config?.port || !config?.haKey) {
             console.log("HaURL: " + config.haUrl, "Port: " + config.port, "HaKey: " + config.haKey, )
             throw new Error("Missing configuration keys!")
         }
+        this.#LOGGER = new LoggerService("appdaemon.js.log")
+        this.#APPLICATION_LOGGER = (route) => {
+            return new LoggerService(route)
+        }
+
 
         this.createHassAuthentication(config)
     }
@@ -50,7 +61,8 @@ export default class HassConnectionManager {
                 conn: this.#CONNECTION,
                 utils: this.#UTILITIES,
                 listeners: this.#LISTENERS,
-                commands: this.#COMMANDS
+                commands: this.#COMMANDS,
+                logger: this.#APPLICATION_LOGGER
             };
         }catch (e){
             console.error(e)
@@ -60,8 +72,11 @@ export default class HassConnectionManager {
 
     createUtilitiesObject() {
         this.#UTILITIES = {
-            //TODO move these out to utility classes
-            //callService: async (domain, service, serviceData = undefined, target = undefined) => await haWs.callService(this.#CONNECTION, domain, service, serviceData, target),
+            //TODO move these out to base classes
+            //getServices: async (filter) => await haWs.getServices(this.#CONNECTION),
+            //getConfig: async (filtere) => await haWs.getConfig(this.#CONNECTION)
+            callService: async (domain, service, serviceData = undefined, target = undefined) => haWs.callService(this.#CONNECTION, domain, service, serviceData, target),
+            // BELOW ARE THE UTILITY CLASSES
             getEntityState: async (filter) => {
                 const states = await haWs.getStates(this.#CONNECTION)
                 return states.filter((v) => v.entity_id === filter)[0]
@@ -70,10 +85,6 @@ export default class HassConnectionManager {
                 const states = await haWs.getStates(this.#CONNECTION)
                 return states.filter((v) => v.entity_id.includes(filter))
             },
-            //getServices: async (filter) => await haWs.getServices(this.#CONNECTION),
-            //getConfig: async (filtere) => await haWs.getConfig(this.#CONNECTION)
-            callService: async (domain, service, serviceData = undefined, target = undefined) => haWs.callService(this.#CONNECTION, domain, service, serviceData, target),
-            // BELOW ARE THE UTILITY CLASSES
             everyEntity: async (entities, key, match) => {
                 if(entities.length < 1) return false;
                 const currentStates = await this.#UTILITIES.getEntitiesState(entities);
@@ -83,7 +94,17 @@ export default class HassConnectionManager {
                 if(entities.length < 1) return false;
                 const currentStates = await this.#UTILITIES.getEntitiesState(entities);
                 return someItems(currentStates, key, match)
+            },
+            delaySeconds: async (seconds) => {
+                return delay_seconds(seconds)
+            },
+            splitOutEntityID: (entity) => {
+                return getEntityFromEntityID(entity)
+            },
+            splitOutNewOldState: (evt) => {
+                return breakOutNewOldStates(evt)
             }
+
         }
     }
 
@@ -103,6 +124,9 @@ export default class HassConnectionManager {
             },
             pauseTimer: async (entity_id, serviceData = {}) => {
                 return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "pause", {}, createEntityTargetObject(entity_id))
+            },
+            finishTimer: async (entity_id, serviceData = {}) => {
+                return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "finish", {}, createEntityTargetObject(entity_id))
             },
             fireScript: async (entity_id, serviceData = {}) => {
                 try {
@@ -127,8 +151,12 @@ export default class HassConnectionManager {
              */
             subscribeEntitiesStateChange: (func, entities = undefined, old_state = undefined, new_state = undefined) => this.#CONNECTION.subscribeEvents((evt) => {
                 if(evt.event_type !== "state_changed") return
+                try{
+                    if(!entities) return func(evt.data)
+                }catch(e){
+                    console.error(`Failed to subscribe to entity state change ${e.toString()}`)
+                }
 
-                if(!entities) return func(evt.data)
 
                 let entitiesCondition = true;
                 let newStateCondition = true;
@@ -147,7 +175,12 @@ export default class HassConnectionManager {
                 }
 
                 if(evt.event_type === "state_changed" && entitiesCondition && newStateCondition && oldStateCondition){
-                    func(evt.data)
+                    try{
+                        func(evt.data)
+                    }catch(e){
+                        console.error(`Failed to callback subscribe entity ${e.toString()}`)
+                    }
+
                 }
             }),
             subscribeToTimerEvents: (func, entities = undefined, type = undefined) => this.#CONNECTION.subscribeEvents((evt) => {

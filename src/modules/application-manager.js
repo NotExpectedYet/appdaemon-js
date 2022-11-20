@@ -24,6 +24,7 @@ class ApplicationManager {
             this.#APPS = fse.readdirSync(appDaemonConfig.configAppDirectory).map(file => {
                 return {
                     name: file.slice(0, -3),
+                    //TODO: look into dynamic importing here..
                     app: require(join(appDaemonConfig.configAppDirectory, file)).app
                 };
             });
@@ -32,13 +33,14 @@ class ApplicationManager {
         }
     }
 
-    loadEnabledApplications(connection, utils, listeners, commands, appConfig){
+    loadEnabledApplications(connection, utils, listeners, logger, commands, appConfig){
         this.#APPS.filter(app => appConfig[app.name] && appConfig[app.name].enable).forEach(app => {
             console.log(app.name + " enabled");
             let appDaemon = {
                 utils,
                 listeners,
                 commands,
+                logger,
                 config: {
                     entities: appConfig[app.name]?.entities || [],
                     settings: appConfig[app.name]?.settings || []

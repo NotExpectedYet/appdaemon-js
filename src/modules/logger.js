@@ -7,13 +7,13 @@ const dtFormat = new Intl.DateTimeFormat("en-GB", {
 });
 
 const COLOURS = {
-    RED: "\033[0;31m",
-    YELLOW: "\033[1;33m",
-    ORANGE: "\033[0;33m",
-    BLUE: "\033[0;34m",
-    PURPLE: "\033[0;35m",
-    WHITE: "\033[1;37m",
-    CYAN: "\033[0;32m"
+    RED: "",
+    YELLOW: "",
+    ORANGE: "",
+    BLUE: "",
+    PURPLE: "",
+    WHITE: "",
+    CYAN: ""
 };
 
 const COLOUR_MAP = {

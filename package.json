@@ -30,6 +30,7 @@
     "validator": "^13.7.0"
   },
   "dependencies": {
+    "date-fn": "^0.0.2",
     "fs-extra": "^10.1.0",
     "home-assistant-js-websocket": "^8.0.0",
     "winston": "^3.8.2",
