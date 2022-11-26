@@ -188,7 +188,6 @@ export default class HassConnectionManager {
                 }
             },
             pauseTimer: async (entity_id, serviceData = {}) => {
-
                 try {
                     return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "pause", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
@@ -196,9 +195,15 @@ export default class HassConnectionManager {
                 }
             },
             finishTimer: async (entity_id, serviceData = {}) => {
-
                 try {
                     return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "finish", {}, createEntityTargetObject(entity_id))
+                } catch (e) {
+                    LOGGER.error("Failed to finish a timer", e.toString())
+                }
+            },
+            cancelTimer:  async (entity_id, serviceData = {}) => {
+                try {
+                    return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "cancel", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
                     LOGGER.error("Failed to finish a timer", e.toString())
                 }
