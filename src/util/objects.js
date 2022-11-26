@@ -14,7 +14,7 @@ export const breakOutNewOldStates = (evt) => {
     const new_state_text = new_state?.state
     const old_state_text = old_state?.state
     return {
-        new_state_text,
-        old_state_text
+        new_state: new_state_text,
+        old_state: old_state_text
     }
 }
