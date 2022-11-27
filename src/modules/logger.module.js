@@ -24,17 +24,19 @@ const COLOUR_MAP = {
     debug: COLOURS.ORANGE,
     error: COLOURS.RED,
     http: COLOURS.PURPLE,
-    silly: COLOURS.CYAN
+    silly: COLOURS.CYAN,
+    commands: COLOURS.PURPLE
 };
 
 const LEVELS = {
     error: 0,
     warn: 1,
     http: 2,
-    info: 3,
-    verbose: 4,
-    debug: 5,
-    silly: 6
+    commands: 3,
+    info: 4,
+    verbose: 5,
+    debug: 6,
+    silly: 7
 };
 
 const dateFormat = () => {
