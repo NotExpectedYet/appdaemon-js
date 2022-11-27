@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import WebSocket from "ws";
 global.WebSocket = WebSocket;
-import appDaemonConfig from "../modules/default-config";
-import applicationsManager from "../modules/application-manager";
-import HassConnectionManager from "../modules/hass-connection-manager";
-import LoggerService from "../modules/logger"
+import appDaemonConfig from "../modules/default-config,module";
+import applicationsManager from "../modules/application-manager.module";
+import HassConnectionManagerModule from "../modules/hass-connection-manager.module";
+import LoggerService from "../modules/logger.module"
 
 
 
@@ -18,11 +18,11 @@ import LoggerService from "../modules/logger"
 
     log.info(`Found ${applicationsManager.appCount} applications!`)
 
-    const hassConnectionManager = new HassConnectionManager(config.appDaemon)
+    const hassConnectionManager = new HassConnectionManagerModule(config.appDaemon)
 
     hassConnectionManager.createHassConnection().then(hassConnection => {
-        const { utils, conn, commands, logger, listeners } = hassConnection;
-        applicationsManager.loadEnabledApplications(conn, utils, listeners, logger, commands, config.apps)
+        const { utils, conn, commands, logger, listeners, events } = hassConnection;
+        applicationsManager.loadEnabledApplications(conn, utils, listeners, logger, commands, config.apps, events)
     }).catch(e => {
         log.error("FATAL ERROR!", e.toString())
         process.exit()

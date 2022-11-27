@@ -10,7 +10,7 @@
   "scripts": {
     "start": "",
     "test": "jest",
-    "dev": "babel-node src/core/app.js dev",
+    "dev": "babel-node src/core/app.js dev --trace-warning",
     "build": "babel src --out-dir lib --ignore *.spec.js",
     "prepublishOnly": "npm run build"
   },

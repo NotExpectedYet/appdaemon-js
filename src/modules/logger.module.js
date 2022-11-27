@@ -1,5 +1,5 @@
 import winston from "winston"
-import appDaemonConfig from "./default-config";
+import appDaemonConfig from "./default-config,module";
 import { join } from "path";
 
 const dtFormat = new Intl.DateTimeFormat("en-GB", {

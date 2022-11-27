@@ -5,7 +5,7 @@ import { returnCliPathArgument } from "../util/args";
 
 let appDaemonConfig;
 
-class DefaultConfig {
+class DefaultConfigModule {
     #CONFIG_DIR = returnCliPathArgument() || join(homedir(), ".appdaemon-js");
     #CUSTOM_APP_DIR = process.env.APPDAEMONJS_CONFIG_APP_DIR || join(this.#CONFIG_DIR, "apps");
     #CONFIG_FILE_PATH = process.env.APPDAEMONJS_CONFIG_FILE_PATH || join(this.#CONFIG_DIR, "config.js");
@@ -57,7 +57,7 @@ class DefaultConfig {
 }
 
 if(!appDaemonConfig){
-    appDaemonConfig = new DefaultConfig()
+    appDaemonConfig = new DefaultConfigModule()
 }
 
 export default appDaemonConfig;

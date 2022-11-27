@@ -1,11 +1,11 @@
 import { join } from "path";
 import fse from "fs-extra";
-import appDaemonConfig from "./default-config";
-import LoggerService from "../modules/logger"
+import appDaemonConfig from "./default-config,module";
+import LoggerService from "./logger.module"
 
 let applicationsManager;
 
-class ApplicationManager {
+class ApplicationManagerModule {
     #APPS;
     #LOGGER;
 
@@ -36,7 +36,7 @@ class ApplicationManager {
         }
     }
 
-    loadEnabledApplications(connection, utils, listeners, logger, commands, appConfig){
+    loadEnabledApplications(connection, utils, listeners, logger, commands, appConfig, events){
         this.#APPS.filter(app => appConfig[app.name] && appConfig[app.name].enable).forEach(app => {
             this.#LOGGER.info("Application has been enabled! " + app.name)
             let appDaemon = {
@@ -44,6 +44,7 @@ class ApplicationManager {
                 listeners,
                 commands,
                 logger,
+                events,
                 config: {
                     entities: appConfig[app.name]?.entities || [],
                     settings: appConfig[app.name]?.settings || []
@@ -60,7 +61,7 @@ class ApplicationManager {
 }
 
 if(!applicationsManager){
-    applicationsManager = new ApplicationManager();
+    applicationsManager = new ApplicationManagerModule();
 }
 
 export default applicationsManager;

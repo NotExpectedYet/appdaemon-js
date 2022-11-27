@@ -2,23 +2,24 @@ import * as haWs from "home-assistant-js-websocket";
 import { getDomainFromEntityID } from "../util/string";
 import { createEntityTargetObject, createServiceDataObject } from "../util/objects"
 import { everyItem, someItems } from "../util/array";
-import { breakOutNewOldStates } from "../../src/util/objects";
-import { getEntityFromEntityID } from "../../src/util/string";
+import { breakOutNewOldStates } from "../util/objects";
+import { getEntityFromEntityID } from "../util/string";
 import { delay_seconds } from "../../lib/util/promise";
-import LoggerService from "../modules/logger"
+import LoggerService from "./logger.module"
 import {dateInTheFuture} from "../util/dates";
+import Dispatcher from "./dispatcher.module";
 
 const LOGGER = new LoggerService("appdaemon.js - Hass Connection Manager")
 
 
-export default class HassConnectionManager {
+export default class HassConnectionManagerModule {
     #HASS_URL;
     #AUTH;
     #CONNECTION;
     #UTILITIES;
     #LISTENERS;
     #COMMANDS;
-    #LOGGER;
+    #EVENTS;
     #APPLICATION_LOGGER;
 
     constructor(config) {
@@ -60,17 +61,23 @@ export default class HassConnectionManager {
             this.createUtilitiesObject();
             this.createListenersObject();
             this.createCommandsObject();
+            this.createEventsManager();
             return {
                 conn: this.#CONNECTION,
                 utils: this.#UTILITIES,
                 listeners: this.#LISTENERS,
                 commands: this.#COMMANDS,
-                logger: this.#APPLICATION_LOGGER
+                logger: this.#APPLICATION_LOGGER,
+                events: this.#EVENTS
             };
         }catch (e){
             LOGGER.error("Error creating hass connection! exiting...", e.toString())
             process.exit();
         }
+    }
+
+    createEventsManager() {
+        this.#EVENTS = new Dispatcher();
     }
 
     createUtilitiesObject() {
