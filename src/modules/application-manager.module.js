@@ -36,7 +36,7 @@ class ApplicationManagerModule {
         }
     }
 
-    loadEnabledApplications(connection, utils, listeners, logger, commands, appConfig, events){
+    loadEnabledApplications(connection, utils, listeners, logger, commands, appConfig, events, tasks){
         this.#APPS.filter(app => appConfig[app.name] && appConfig[app.name].enable).forEach(app => {
             this.#LOGGER.info("Application has been enabled! " + app.name)
             let appDaemon = {
@@ -45,6 +45,7 @@ class ApplicationManagerModule {
                 commands,
                 logger,
                 events,
+                tasks,
                 config: {
                     entities: appConfig[app.name]?.entities || [],
                     settings: appConfig[app.name]?.settings || []

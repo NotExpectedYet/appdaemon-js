@@ -8,6 +8,7 @@ import { delay_seconds } from "../../lib/util/promise";
 import LoggerService from "./logger.module"
 import {dateInTheFuture} from "../util/dates";
 import Dispatcher from "./dispatcher.module";
+import TaskManager from "./tasks.module";
 
 const LOGGER = new LoggerService("appdaemon.js - Hass Connection Manager")
 
@@ -20,6 +21,7 @@ export default class HassConnectionManagerModule {
     #LISTENERS;
     #COMMANDS;
     #EVENTS;
+    #TASKS;
     #APPLICATION_LOGGER;
 
     constructor(config) {
@@ -62,18 +64,24 @@ export default class HassConnectionManagerModule {
             this.createListenersObject();
             this.createCommandsObject();
             this.createEventsManager();
+            this.createTasksManager();
             return {
                 conn: this.#CONNECTION,
                 utils: this.#UTILITIES,
                 listeners: this.#LISTENERS,
                 commands: this.#COMMANDS,
                 logger: this.#APPLICATION_LOGGER,
-                events: this.#EVENTS
+                events: this.#EVENTS,
+                tasks: this.#TASKS
             };
         }catch (e){
             LOGGER.error("Error creating hass connection! exiting...", e.toString())
             process.exit();
         }
+    }
+
+    createTasksManager() {
+        this.#TASKS = new TaskManager();
     }
 
     createEventsManager() {

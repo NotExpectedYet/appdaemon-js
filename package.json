@@ -34,6 +34,8 @@
     "date-fns": "^2.29.3",
     "fs-extra": "^10.1.0",
     "home-assistant-js-websocket": "^8.0.0",
+    "node-schedule": "^2.1.0",
+    "toad-scheduler": "^2.0.0",
     "winston": "^3.8.2",
     "ws": "^8.11.0"
   },

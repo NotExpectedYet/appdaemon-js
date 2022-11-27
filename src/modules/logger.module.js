@@ -119,23 +119,31 @@ export default class LoggerService {
         });
     }
 
-    http(message, meta) {
-        this.logger.log("http", message, {
+    commands(message, meta) {
+        this.logger.log("commands", message, {
             meta
         });
     }
 
-    debug(message, meta) {
-        this.logger.log("debug", message, {
+    listeners(message, meta) {
+        this.logger.log("listeners", message, {
+            meta
+        });
+    }
+
+    events(message, meta) {
+        this.logger.log("events", message, {
+            meta
+        });
+    }
+
+    utils(message, meta) {
+        this.logger.log("utils", message, {
             meta
         });
     }
 
     error(message, meta) {
         this.logger.log("error", message, { meta });
-    }
-
-    silly(message, meta) {
-        this.logger.log("silly", message, { meta });
     }
 }
