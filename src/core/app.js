@@ -21,8 +21,8 @@ import LoggerService from "../modules/logger.module"
     const hassConnectionManager = new HassConnectionManagerModule(config.appDaemon)
 
     hassConnectionManager.createHassConnection().then(hassConnection => {
-        const { utils, conn, commands, logger, listeners, events, tasks } = hassConnection;
-        applicationsManager.loadEnabledApplications(conn, utils, listeners, logger, commands, config.apps, events, tasks)
+        const { utils, conn, commands, logger, listeners, events, tasks, store} = hassConnection;
+        applicationsManager.loadEnabledApplications(conn, utils, listeners, logger, commands, config.apps, events, tasks, store)
     }).catch(e => {
         log.error("FATAL ERROR!", e.toString())
         process.exit()

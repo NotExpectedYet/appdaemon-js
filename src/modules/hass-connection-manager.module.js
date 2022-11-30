@@ -9,6 +9,7 @@ import LoggerService from "./logger.module"
 import {dateInTheFuture} from "../util/dates";
 import Dispatcher from "./dispatcher.module";
 import TaskManager from "./tasks.module";
+import MemoryStoreModule from "./memory-store.module";
 
 const LOGGER = new LoggerService("appdaemon.js - Hass Connection Manager")
 
@@ -22,6 +23,7 @@ export default class HassConnectionManagerModule {
     #COMMANDS;
     #EVENTS;
     #TASKS;
+    #STORE;
     #APPLICATION_LOGGER;
 
     constructor(config) {
@@ -65,6 +67,7 @@ export default class HassConnectionManagerModule {
             this.createCommandsObject();
             this.createEventsManager();
             this.createTasksManager();
+            this.createInMemoryStore();
             return {
                 conn: this.#CONNECTION,
                 utils: this.#UTILITIES,
@@ -72,7 +75,8 @@ export default class HassConnectionManagerModule {
                 commands: this.#COMMANDS,
                 logger: this.#APPLICATION_LOGGER,
                 events: this.#EVENTS,
-                tasks: this.#TASKS
+                tasks: this.#TASKS,
+                store: this.#STORE
             };
         }catch (e){
             LOGGER.error("Error creating hass connection! exiting...", e.toString())
@@ -86,6 +90,10 @@ export default class HassConnectionManagerModule {
 
     createEventsManager() {
         this.#EVENTS = new Dispatcher();
+    }
+
+    createInMemoryStore() {
+        this.#STORE = new MemoryStoreModule();
     }
 
     createUtilitiesObject() {
@@ -230,6 +238,13 @@ export default class HassConnectionManagerModule {
                     LOGGER.error("Failed to fire a script", e.toString())
                 }
 
+            },
+            setHVACMode: async (entity_id, serviceData = {}) => {
+                try {
+                    return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "set_hvac_mode", createServiceDataObject(serviceData), createEntityTargetObject(entity_id))
+                } catch (e) {
+                    LOGGER.error("Failed to fire a script", e.toString())
+                }
             }
         }
     }

@@ -25,7 +25,9 @@ const COLOUR_MAP = {
     error: COLOURS.RED,
     http: COLOURS.PURPLE,
     silly: COLOURS.CYAN,
-    commands: COLOURS.PURPLE
+    commands: COLOURS.PURPLE,
+    utils: COLOURS.ORANGE,
+    events: COLOURS.BLUE
 };
 
 const LEVELS = {
@@ -33,6 +35,8 @@ const LEVELS = {
     warn: 1,
     http: 2,
     commands: 3,
+    events: 3,
+    utils: 3,
     info: 4,
     verbose: 5,
     debug: 6,
@@ -123,12 +127,6 @@ export default class LoggerService {
 
     commands(message, meta) {
         this.logger.log("commands", message, {
-            meta
-        });
-    }
-
-    listeners(message, meta) {
-        this.logger.log("listeners", message, {
             meta
         });
     }

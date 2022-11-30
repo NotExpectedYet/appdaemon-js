@@ -1,6 +1,9 @@
 export default class Dispatcher {
     #events = {};
+    // TODO these are personal, shouldn't be here...
     #EVENT_TYPES = {
+        AREA_OCCUPIED: "areaOccupied",
+        AREA_UNOCCUPIED: "areaUnoccupied",
         MOTION_TRIGGERED: "motionTriggered",
         MOTION_CLEARED: "motionCleared",
         OCCUPANCY_TRIGGERED: "occupancyTriggered",
@@ -17,12 +20,15 @@ export default class Dispatcher {
         TIMER_PAUSED: "timerPaused",
         TIMER_RESTARTED: "timerRestarted",
         HEAT_CHANGE: "heatChange",
+        BOOLEAN_ON: "booleanOn",
+        BOOLEAN_OFF: "booleanOff",
         HUMIDITY_CHANGE: "humidityChange",
+        TEMPERATURE_CHANGE: "temperatureChange",
         IAQ_CHANGE: "iaqChange",
         DEVICE_ON: "deviceOn",
         DEVICE_OFF: "deviceOff",
         DARK_TRIGGERED: "brightnessChange",
-        LIGHT_TRIGGERED: "lightTriggeredd"
+        LIGHT_TRIGGERED: "lightTriggered"
     }
     constructor () {
     }
