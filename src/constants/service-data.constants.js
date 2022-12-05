@@ -7,3 +7,4 @@ export const HVAC_AUTO = {
 export const HVAC_HEAT = {
     hvac_mode: "heat"
 }
+export const SET_HUMIDITY = {}

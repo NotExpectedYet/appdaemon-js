@@ -1,6 +1,6 @@
 import * as haWs from "home-assistant-js-websocket";
 import { getDomainFromEntityID } from "../util/string";
-import { createEntityTargetObject, createServiceDataObject } from "../util/objects"
+import { createEntityTargetObject, createServiceDataObject, createScriptDataObject } from "../util/objects"
 import { everyItem, someItems } from "../util/array";
 import { breakOutNewOldStates } from "../util/objects";
 import { getEntityFromEntityID } from "../util/string";
@@ -103,9 +103,10 @@ export default class HassConnectionManagerModule {
             //getConfig: async (filtere) => await haWs.getConfig(this.#CONNECTION)
             callService: async (domain, service, serviceData = undefined, target = undefined) => {
                 try {
-                    return haWs.callService(this.#CONNECTION, domain, service, serviceData, target)
+                    return haWs.callService(this.#CONNECTION, domain, service, serviceData, target);
                 } catch (e) {
-                    LOGGER.error(`Failed to call service ${e.toString()}`, {domain, service, serviceData, target})
+                    LOGGER.error(`Failed to call service`, {domain, service, serviceData, target})
+                    LOGGER.error(e)
                 }
 
 
@@ -183,7 +184,7 @@ export default class HassConnectionManagerModule {
         this.#COMMANDS = {
             turnOn: async (entity_id, serviceData = {}) => {
                 try {
-                    return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_on", {}, createEntityTargetObject(entity_id))
+                    await this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_on", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
                     LOGGER.error(`Failed to turn on a ${getDomainFromEntityID(entity_id)}`,e.toString())
                 }
@@ -191,61 +192,83 @@ export default class HassConnectionManagerModule {
             turnOff: async (entity_id, serviceData = {}) => {
 
                 try {
-                    return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_off", {}, createEntityTargetObject(entity_id))
+                    await this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_off", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
                     LOGGER.error(`Failed to turn off a ${getDomainFromEntityID(entity_id)}`, e.toString())
                 }
             },
             toggle: async (entity_id, serviceData = {}) => {
                 try {
-                    return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "toggle", {}, createEntityTargetObject(entity_id))
+                    await this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "toggle", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
                     LOGGER.error(`Failed to toggle a ${getDomainFromEntityID(entity_id)}`, e.toString())
                 }
             },
+            setValue: async (entity_id, serviceData = {}) => {
+                try {
+                    await this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "set_value", createServiceDataObject(serviceData), createEntityTargetObject(entity_id))
+                } catch (e) {
+                    LOGGER.error(`Failed to set value of ${getDomainFromEntityID(entity_id)}`, e.toString())
+                }
+            },
             startTimer: async (entity_id, serviceData = {}) => {
                 try {
-                    return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "start", {}, createEntityTargetObject(entity_id))
+                    await this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "start", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
                     LOGGER.error("Failed to start a timer", e.toString())
                 }
             },
             pauseTimer: async (entity_id, serviceData = {}) => {
                 try {
-                    return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "pause", {}, createEntityTargetObject(entity_id))
+                    await this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "pause", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
                     LOGGER.error("Failed to pause a timer", e.toString())
                 }
             },
             finishTimer: async (entity_id, serviceData = {}) => {
                 try {
-                    return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "finish", {}, createEntityTargetObject(entity_id))
+                    await this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "finish", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
                     LOGGER.error("Failed to finish a timer", e.toString())
                 }
             },
             cancelTimer:  async (entity_id, serviceData = {}) => {
                 try {
-                    return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "cancel", {}, createEntityTargetObject(entity_id))
+                    await this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "cancel", {}, createEntityTargetObject(entity_id))
                 } catch (e) {
                     LOGGER.error("Failed to finish a timer", e.toString())
                 }
             },
             fireScript: async (entity_id, serviceData = {}) => {
                 try {
-                    return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_on", createServiceDataObject(serviceData), createEntityTargetObject(entity_id))
+                    await this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "turn_on", createScriptDataObject(serviceData), createEntityTargetObject(entity_id))
                 } catch (e) {
-                    LOGGER.error("Failed to fire a script", e.toString())
+                    LOGGER.error(`Failed to fire a Script: ${serviceData, entity_id}`, e.toString())
                 }
 
             },
             setHVACMode: async (entity_id, serviceData = {}) => {
                 try {
-                    return this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "set_hvac_mode", createServiceDataObject(serviceData), createEntityTargetObject(entity_id))
+                    await this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "set_hvac_mode", createServiceDataObject(serviceData), createEntityTargetObject(entity_id))
                 } catch (e) {
-                    LOGGER.error("Failed to fire a script", e.toString())
+                    LOGGER.error(`Failed to set HVAC Mode: ${serviceData, entity_id}`, e)
                 }
-            }
+            },
+            setHVACTarget: async (entity_id, serviceData = {}) => {
+                try {
+                    await this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "set_temperature", createServiceDataObject(serviceData), createEntityTargetObject(entity_id))
+                } catch (e) {
+                    LOGGER.error(`Failed to set HVAC Mode: ${serviceData, entity_id}`, e)
+                }
+            },
+            setHumidifierTarget: async (entity_id, serviceData = {}) => {
+                try {
+                    await this.#UTILITIES.callService(getDomainFromEntityID(entity_id), "set_humidity", createServiceDataObject(serviceData), createEntityTargetObject(entity_id))
+                } catch (e) {
+                    LOGGER.error(`Failed to set HVAC Mode: ${serviceData, entity_id}`, e)
+                }
+            },
+
         }
     }
 

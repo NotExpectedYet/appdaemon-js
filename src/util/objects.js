@@ -3,10 +3,14 @@ export const createEntityTargetObject = (entity_id) => {
         entity_id,
     }
 }
-export const createServiceDataObject = (additionalData) => {
+export const createScriptDataObject = (additionalData) => {
     return {
         variables: additionalData
     }
+}
+
+export const createServiceDataObject = (additionalData) => {
+    return additionalData
 }
 
 export const breakOutNewOldStates = (evt) => {

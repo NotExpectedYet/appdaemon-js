@@ -16,9 +16,12 @@ export default class MemoryStoreModule{
     }
 
     collectValues(key, value, maxLength){
+        console.log(this.#memory)
+        console.log(!this.#memory[key])
         if(!this.#memory[key]){
             this.#memory[key] = [];
         }
+        console.log("MOEMORY", this.#memory[key])
         this.#memory[key].push(value)
 
         if(this.#memory[key].length >= maxLength){

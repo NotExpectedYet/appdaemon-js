@@ -38,8 +38,12 @@ export default class TaskManager {
         }
     }
 
-    addTimeout (taskId, seconds, func){
+    addTimeout (taskId, seconds, func, skipIfExists = false){
         //Always add task, or recreate task with a fresh interval...
+        if(skipIfExists || this.getSafeTasksById(taskId)){
+            return;
+        }
+
         this.stopAndDestroyTask(taskId)
         const newTask = new Task(taskId, this.#getSelfDestroyingTask(taskId, seconds, func))
         const newInterval = new SimpleIntervalJob({seconds: seconds, runImmediately: true}, newTask, {id: taskId, preventOverrun: true})
